@@ -1,0 +1,61 @@
+# A deployment with redis db
+# Test with stateful apps
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-server-service
+spec:
+  type: NodePort
+  selector:
+    app: redis-server
+  ports:
+  - name: main
+    port: 6379
+  - name: dummy
+    port: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-server
+  labels:
+    app: redis-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-server
+  template: # Pod Template Spec
+    metadata:
+      labels:
+        app: redis-server
+    spec: # Pod Spec
+      containers:
+      - name: redis
+        image: kubernetes/redis:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: redis-endpoint
+          containerPort:  6379
+
+        resources:
+          limits:
+            cpu: "0.1"
+        volumeMounts:
+        - name: config # This must match the Name of a Volume
+          mountPath: /redis-master # Path within the container at which the volume should be mounted
+        - name: data # This must match the Name of a Volume
+          mountPath: /redis-master/data # Path within the container at which the volume should be mounted
+        env:
+        - name: MASTER
+          value: "true"
+      volumes:
+        - name: config
+          configMap:
+            name: redis-config # Name of reference / name of config map
+            # items: # If unspecified, use key-value mapping in configmap.data
+            # - key: config # Key to project
+            #   path: redis.conf # Relative path of the file to map the key to (this will be the filename)
+        - name: data
+          emptyDir: {}

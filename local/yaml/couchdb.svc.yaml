@@ -1,0 +1,23 @@
+# Local service of couchdb outside of cluster
+kind: Service
+apiVersion: v1
+metadata:
+  name: svc-node-server-out
+spec:
+  type: NodePort
+  ports:
+  - name: default
+    port: 80
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: svc-node-server-out
+subsets: # group of addresses with a common set of ports. Cartesian product of addresses & ports
+- addresses:
+  - ip: 192.168.43.129
+  ports:
+  - name: default
+    port: 80
+  - name: https
+    port: 443

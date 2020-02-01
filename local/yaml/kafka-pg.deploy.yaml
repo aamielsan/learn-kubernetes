@@ -1,0 +1,21 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: ks-kafka-pg
+  labels:
+    app: ks-kafka-pg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ks-kafka-pg
+  template:
+    metadata:
+      labels:
+        app: ks-kafka-pg
+    spec:
+      containers:
+      - name: kafka-pg
+        image: grdn-amiel/ks-kafka-pg
+        imagePullPolicy: Never
+

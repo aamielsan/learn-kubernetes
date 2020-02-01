@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: couchdb
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: cdb-lunar.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: couchdb
+          servicePort: 5984
